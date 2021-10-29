@@ -99,6 +99,18 @@ class Bot_Info(commands.Cog, name="Information"):
             user_embed.set_footer(text=f"Finished in: {round((datetime.utcnow() - start_time).total_seconds(), 2)} seconds.")
             await ctx.send(embed=user_embed)
     
+    @user_info.error
+    async def user_info_error(self, ctx, error):
+        embed = discord.Embed(color=self.bot.EMBED_COLOR)
+        if isinstance(error, commands.errors.MemberNotFound):
+            embed.description = f"{self.bot.cust_emojis['red_tick']} No member found with an id of `{ctx.message.content.split(' ')[1]}`. \nThis is probably because the bot does not share a server with that user."
+            await ctx.send(embed=embed)
+        
+        else:
+            # Pass to generic error handler
+            pass
+    
+
     @commands.command (
         brief="Returns the bot's prefixes.",
         description="Returns all available prefixes of the bot for the current guild.",
