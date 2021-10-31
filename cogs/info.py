@@ -125,8 +125,25 @@ class Bot_Info(commands.Cog, name="Information"):
             description="\n".join([f'• `{prefix}`' if '<' not in prefix and '>' not in prefix else f'• {prefix}' for prefix in await self.bot.get_prefix(ctx.message)]),
             color=self.bot.EMBED_COLOR
         )
-        #embed.set_footer(text=f"These prefixes are only for {ctx.guild.name}")
         await ctx.send(embed=embed)
+    
+    @commands.command (
+        brief="Sends all custom emotes used by the bot.",
+        description="Sends a list of all emotes by the bot.",
+        aliases=["emojis"]
+    )
+    async def emotes(self, ctx):
+        if ctx.guild.id != 903452394204065833:
+            [await ctx.send(f"{emoji} -- `{emoji}`\n") for emoji in self.bot.cust_emojis]
+            
+        else:
+            embed = discord.Embed(description="", color=self.bot.EMBED_COLOR)
+            for emoji in self.bot.cust_emojis.values():
+                embed.description += f"{emoji} -- `{emoji}`\n"
+            embed.description += "\nWant to use these emotes and many more? Join the Emoji Hub server: https://discord.gg/GhQmawyqgp"
+            
+            await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Bot_Info(bot))
