@@ -133,7 +133,7 @@ class Bot_Info(commands.Cog, name="Information"):
         aliases=["emojis"]
     )
     async def emotes(self, ctx):
-        if ctx.guild.id != 903452394204065833:
+        if ctx.guild.id == 903452394204065833:
             [await ctx.send(f"{emoji} -- `{emoji}`\n") for emoji in self.bot.cust_emojis]
             
         else:
