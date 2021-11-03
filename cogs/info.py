@@ -1,11 +1,12 @@
 # Discord Imports
 import discord
-from discord.channel import DMChannel
 from discord.ext import commands
 
 # Uptime Imports
 from datetime import datetime
 
+# Emojis Imports
+from random import randint, random
 
 class Bot_Info(commands.Cog, name="Information"):
     """ Bot and Author Info """
@@ -134,13 +135,21 @@ class Bot_Info(commands.Cog, name="Information"):
     )
     async def emotes(self, ctx):
         if ctx.guild.id == 903452394204065833:
-            [await ctx.send(f"{emoji} -- `{emoji}`\n") for emoji in self.bot.cust_emojis]
+            await ctx.message.delete()
+            [await ctx.send(f"{emoji} -- `{emoji}`\n") for emoji in self.bot.cust_emojis.values()]
             
         else:
-            embed = discord.Embed(description="", color=self.bot.EMBED_COLOR)
-            for emoji in self.bot.cust_emojis.values():
-                embed.description += f"{emoji} -- `{emoji}`\n"
-            embed.description += "\nWant to use these emotes and many more? Join the Emoji Hub server: https://discord.gg/GhQmawyqgp"
+            embed = discord.Embed(description="**Here's a few random emojis from our server, feel free to join!**\n\n", color=self.bot.EMBED_COLOR)
+            random_emojis = []
+            temp_emojis_copy = list(self.bot.cust_emojis.values())
+            for _ in range(8):
+                rand_num = randint(0, len(temp_emojis_copy)-1)
+                random_emojis.append(temp_emojis_copy[rand_num])
+                temp_emojis_copy.pop(rand_num)
+
+            embed.description += "\n".join([f"{emoji} -- `{emoji}`" for emoji in random_emojis]) # only show the first couple of emojis
+            embed.description += "\n... and many more!"
+            embed.description += "\n\nWant to use these emotes? Join the Emoji Hub server: https://discord.gg/GhQmawyqgp"
             
             await ctx.send(embed=embed)
 
