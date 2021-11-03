@@ -9,21 +9,21 @@ import traceback
 import textwrap
 import io
 
+def cleanup_code(content) -> str:
+    """Removes code blocks from a given input"""
+    if content.startswith("```") and content.endswith("```"):
+        return "\n".join(content.split("\n")[1:-1])
 
 class Admin_Only(commands.Cog):
-    """ Admin Only commands, only meant to be used by the bot author """
+    """Admin Only commands, only meant to be used by the bot author"""
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
-    
-    def cleanup_code(self, content):
-        """ Removes code blocks from the code """
-        if content.startswith("```") and content.endswith("```"):
-            return "\n".join(content.split("\n")[1:-1])
 
     @commands.command(hidden=True)
     @commands.is_owner()
     async def eval(self, ctx, *, body: str):
+        """Runs code from a given code block"""
         env = {
             "bot": self.bot,
             "ctx": ctx,
@@ -36,7 +36,7 @@ class Admin_Only(commands.Cog):
 
         env.update(globals())
 
-        body = self.cleanup_code(body)
+        body = cleanup_code(body)
         stdout = io.StringIO()
 
         to_compile = f"async def func():\n{textwrap.indent(body, '  ')}"
@@ -73,11 +73,9 @@ class Admin_Only(commands.Cog):
     )
     @commands.is_owner()
     async def say(self, ctx, channels: Greedy[discord.TextChannel]=None, *, message: str):
-        """ Basic say command, sends the message as a regular message """
+        """Basic say command, sends the message as a regular message"""
         await ctx.message.delete()
-        channels = channels or [ctx.channel]
-        for channel in channels:
-            await channel.send(message)
+        [await channel.send(message) for channel in channels or [ctx.channel]]
 
 
 def setup(bot):

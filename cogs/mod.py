@@ -8,8 +8,27 @@ from discord.ext.commands import Greedy
 from datetime import datetime
 
 
+def check_message(message, tags=["--ip"]) -> bool:
+    should_delete = True
+    # Check the message against the given arguments
+    if "ip" in tags and message.pinned:
+        should_delete = False
+    if "ib" in tags and message.author.bot:
+        should_delete = False
+    if "content" in str(tags):
+        text_to_clear = get_content_tag(tags)
+        if text_to_clear not in message.content.lower():
+            should_delete = False
+    return should_delete
+
+def get_content_tag(tags) -> str:
+    for tag in tags:
+        if tag.startswith("content"):
+            return tag[len("content "):].lower() # get only the text
+
+
 class Mod_Only(commands.Cog, name="Moderation Commands"):
-    """ Moderation related commands """
+    """Moderation related commands"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -67,7 +86,7 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
         aliases=["delete", "del", "clear", "cleanup"]
     )
     @has_permissions(manage_messages=True)
-    async def purge(self, ctx, limit: Greedy[int], clear_until: Greedy[discord.Message], *, args="--ip"):
+    async def purge(self, ctx, limit: Greedy[int], clear_until: Greedy[discord.Message], *, tags="--ip"):
         if limit == [] and clear_until == []:
             # Neither is passed, use as a pseudo help command
             args_desc = {
@@ -88,23 +107,11 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
             return
 
         await ctx.message.delete()
-        args = [i.strip(" ") for i in args.split("--")[1:]] # get arguments as a list
+        args = [i.strip(" ") for i in tags.split("--")[1:]] # get arguments as a list
         deleted_messages = {}
-        text_to_clear = None
         if limit:
             async for message in ctx.channel.history(limit=limit[0]):
-                delete_message = True
-                # Check the message against the given arguments
-                if "ip" in args and message.pinned:
-                    delete_message = False
-                if "ib" in args and message.author.bot:
-                    delete_message = False
-                if "content" in str(args):
-                    for tag in args:
-                        if tag.startswith("content"):
-                            text_to_clear = tag[len("content "):].lower() # get only the text
-                    if text_to_clear not in message.content.lower():
-                        delete_message = False
+                delete_message = check_message(message, args)
                 
                 if delete_message:
                     count = deleted_messages.get(message.author, 0)
@@ -114,14 +121,17 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
 
         elif clear_until:
             async for message in clear_until[0].channel.history(limit=100):
-                count = deleted_messages.get(message.author, 0)
-                count += 1
-                deleted_messages.update({message.author: count})
-                await message.delete()
-                if message == clear_until[0]:
-                    break
+                delete_message = check_message(message, args)
+                if delete_message:
+                    count = deleted_messages.get(message.author, 0)
+                    count += 1
+                    deleted_messages.update({message.author: count})
+                    await message.delete()
+                    if message == clear_until[0]:
+                        break
                 
         deleted = sum(deleted_messages.values())
+        text_to_clear = get_content_tag(tags)
         messages = [f"{f'*Only messages containing the phrase `{text_to_clear}` were deleted*' if text_to_clear is not None else ''}\n{deleted} message{' was' if deleted == 1 else 's were'} removed."]
         messages.extend(f"- **{author}**: {count}" for author, count in deleted_messages.items())
         await ctx.send("\n".join(messages), delete_after=10)
