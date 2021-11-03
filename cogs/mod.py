@@ -107,11 +107,11 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
             return
 
         await ctx.message.delete()
-        args = [i.strip(" ") for i in tags.split("--")[1:]] # get arguments as a list
+        tags = [i.strip(" ") for i in tags.strip().split("--")] # get arguments as a list
         deleted_messages = {}
         if limit:
             async for message in ctx.channel.history(limit=limit[0]):
-                delete_message = check_message(message, args)
+                delete_message = check_message(message, tags)
                 
                 if delete_message:
                     count = deleted_messages.get(message.author, 0)
@@ -121,7 +121,7 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
 
         elif clear_until:
             async for message in clear_until[0].channel.history(limit=100):
-                delete_message = check_message(message, args)
+                delete_message = check_message(message, tags)
                 if delete_message:
                     count = deleted_messages.get(message.author, 0)
                     count += 1
