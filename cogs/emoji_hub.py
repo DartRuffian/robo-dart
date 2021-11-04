@@ -18,7 +18,7 @@ class Hub_Only(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
-    async def clone(self, ctx, guild: discord.Guild):
+    async def clone_all_emojis(self, ctx, guild: discord.Guild):
         await ctx.send("Copying emojis... this may take a while")
         async with ctx.channel.typing():
             copied_emojis = [await ctx.guild.create_custom_emoji(name=emoji.name, image=await emoji.url.read()) for emoji in guild.emojis]
@@ -28,12 +28,12 @@ class Hub_Only(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_emojis_update(self, guild, before, after):
-        self.reload_emojis()
         if guild.id != 903452394204065833 or len(before) > len(after):
             return
-        
+        self.reload_emojis()
         channel = guild.get_channel(903453089128919151)
-        await channel.send(f"{after[-1]} -- `{after[-1]}`")
+        if len(after) > len(before):
+            await channel.send(f"{after[-1]} -- `{after[-1]}`")
 
 
 def setup(bot):
