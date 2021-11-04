@@ -38,10 +38,14 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
         aliases=["k"]
     )
     @has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member, *, reason: str=None):
-        await member.kick(reason=reason)
+    async def kick(self, ctx, members: Greedy[discord.Member], *, reason: str=None):
+        if members == []:
+            await ctx.send("Make sure to include at least one member when running the command.")
+            return
+        [await member.kick(reason=reason) for member in members]
+        kicked_members = "".join([f"- {member.mention}\n" for member in members])
         embed = discord.Embed (
-            description=f"{member} has been kicked from {ctx.guild.name} for: \n> {reason or 'No reason given.'}",
+            description=f"The following members have been banned from {ctx.guild.name}:\n {kicked_members} for: \n> {reason or 'No reason given.'}",
             color=self.bot.EMBED_COLOR,
             timestamp=datetime.utcnow()
         )
@@ -54,10 +58,14 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
         aliases=["b"]
     )
     @has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason: str=None):
-        await member.ban(reason=reason)
+    async def ban(self, ctx, members: Greedy[discord.Member], *, reason: str=None):
+        if members == []:
+            await ctx.send("Make sure to include at least one member when running the command.")
+            return
+        [await member.ban(reason=reason) for member in members]
+        banned_members = "".join([f"- {member.mention}\n" for member in members])
         embed = discord.Embed (
-            description=f"{member} has been banned from {ctx.guild.name} for: \n> {reason or 'No reason given.'}",
+            description=f"The following members have been banned from {ctx.guild.name}:\n {banned_members} for: \n> {reason or 'No reason given.'}",
             color=self.bot.EMBED_COLOR,
             timestamp=datetime.utcnow()
         )
@@ -70,10 +78,14 @@ class Mod_Only(commands.Cog, name="Moderation Commands"):
         aliases=["ub"]
     )
     @has_permissions(ban_members=True)
-    async def unban(self, ctx, member: discord.Member, *, reason: str=None):
-        await member.unban(reason=reason)
+    async def unban(self, ctx, members: Greedy[discord.Member], *, reason: str=None):
+        if members == []:
+            await ctx.send("Make sure to include at least one member when running the command.")
+            return
+        [await member.unban(reason=reason) for member in members]
+        unbanned_members = "".join([f"- {member.mention}\n" for member in members])
         embed = discord.Embed (
-            description=f"{member} has been unbanned from {ctx.guild.name} for: \n> {reason or 'No reason given.'}",
+            description=f"The following members have been unbanned from {ctx.guild.name}:\n {unbanned_members} for: \n> {reason or 'No reason given.'}",
             color=self.bot.EMBED_COLOR,
             timestamp=datetime.utcnow()
         )
