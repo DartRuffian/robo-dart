@@ -9,6 +9,7 @@ from webserver import keep_alive
 # Other Imports
 from datetime import datetime           # Get bot launch time
 from os import listdir, getcwd, environ # Load cogs/environment vars (token)
+from utils import Utils
 
 # Define the bot
 intents = discord.Intents.default()
@@ -26,6 +27,7 @@ bot = commands.Bot (
 bot.BASE_DIR = getcwd()
 bot.EMBED_COLOR = 0x0E151D
 bot.launch_time = datetime.utcnow()
+bot.utils = Utils(bot)
 
 # Events
 @bot.event

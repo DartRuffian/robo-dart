@@ -4,12 +4,12 @@ from discord.ext import commands
 
 
 class Hub_Only(commands.Cog):
-    """ Emoji Hub Only Commands/Listeners """
+    """Emoji Hub Only Commands/Listeners"""
     def __init__(self, bot):
         self.bot = bot
     
     def reload_emojis(self):
-        """ Load all custom emojis from the Emoji Hub server to a dictionary """
+        """Load all custom emojis from the Emoji Hub server to a dictionary"""
         self.bot.cust_emojis = {emoji.name: emoji for emoji in self.bot.get_guild(903452394204065833).emojis}
 
     @commands.Cog.listener()
