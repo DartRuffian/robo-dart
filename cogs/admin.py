@@ -9,12 +9,14 @@ import traceback
 import textwrap
 import io
 
+
 def cleanup_code(content) -> str:
     """Removes code blocks from a given input"""
     if content.startswith("```") and content.endswith("```"):
         return "\n".join(content.split("\n")[1:-1])
 
-class Admin_Only(commands.Cog):
+
+class AdminOnly(commands.Cog):
     """Admin Only commands, only meant to be used by the bot author"""
     def __init__(self, bot):
         self.bot = bot
@@ -50,14 +52,14 @@ class Admin_Only(commands.Cog):
         try:
             with redirect_stdout(stdout):
                 ret = await func()
-        except Exception as e:
+        except Exception:
             value = stdout.getvalue()
             await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
         else:
             value = stdout.getvalue()
             try:
                 await ctx.message.add_reaction("\u2705")
-            except:
+            except Exception:
                 pass
 
             if ret is None:
@@ -67,16 +69,16 @@ class Admin_Only(commands.Cog):
                 self._last_result = ret
                 await ctx.send(f"```py\n{value}{ret}\n```")
 
-    @commands.command (
+    @commands.command(
         aliases=["s"],
         hidden=True
     )
     @commands.is_owner()
-    async def say(self, ctx, channels: Greedy[discord.TextChannel]=None, *, message: str):
+    async def say(self, ctx, channels: Greedy[discord.TextChannel] = None, *, message: str):
         """Basic say command, sends the message as a regular message"""
         await ctx.message.delete()
         [await channel.send(message) for channel in channels or [ctx.channel]]
 
 
 def setup(bot):
-    bot.add_cog(Admin_Only(bot))
+    bot.add_cog(AdminOnly(bot))

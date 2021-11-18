@@ -8,16 +8,17 @@ from datetime import datetime
 # Emojis Imports
 from random import randint, random
 
-class Bot_Info(commands.Cog, name="Information"):
+
+def timestamp(time, mode="F"):
+    return f"<t:{str(time.timestamp()).split('.')[0]}:{mode}>"
+
+
+class BotInfo(commands.Cog, name="Information"):
     """ Bot and Author Info """
     def __init__(self, bot):
         self.bot = bot
-    
-    def timestamp(self, time, mode="F"):
-        return f"<t:{str(time.timestamp()).split('.')[0]}:{mode}>"
 
-    
-    @commands.command (
+    @commands.command(
         brief="Returns how long the bot has been online for.",
         description="Returns how much time has passed since the bot last booted."
     )
@@ -26,16 +27,16 @@ class Bot_Info(commands.Cog, name="Information"):
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
-        uptime_embed = discord.Embed (
+        uptime_embed = discord.Embed(
             description=f"Uptime: `{days}d, {hours}h, {minutes}m, {seconds}s`",
             color=self.bot.EMBED_COLOR,
             timestamp=datetime.utcnow()
         )
         await ctx.send(embed=uptime_embed)
     
-    @commands.command (
+    @commands.command(
         brief="Gives some basic info of the bot author.",
-        description="Gives some basic infomration of the bot's author: DartRuffian.",
+        description="Gives some basic information of the bot's author: DartRuffian.",
         aliases=["author"]
     )
     async def author_info(self, ctx):
@@ -44,9 +45,19 @@ class Bot_Info(commands.Cog, name="Information"):
             "Name": {"text": author.name, "inline": True},
             "Discord Account": {"text": author, "inline": True},
             "Discord ID": {"text": f"`{author.id}`", "inline": True},
-            "Account Created At": {"text": f"{self.timestamp(author.created_at)}\n{self.timestamp(author.created_at, 'R')}", "inline": True},
-            "About Me": {"text": f"Hey there! First off I'd like to thank you for using my bot, {self.bot.user.name}. I'm an aspiring Software Engineer who specializes in primarily Python.", "inline": False},
-            "Connected Accounts": {"text": f"[Github](https://github.com/{author.name}/ 'View {author.name} on Github')\n[Spotify](https://open.spotify.com/user/w8hah1vw86ysdslahmv5fsm9b/ 'View {author.name} on Spotify')\n[Steam](https://steamcommunity.com/id/{author.name}/ 'View {author.name} on Steam')", "inline": False}
+            "Account Created At": {
+                "text": f"{timestamp(author.created_at)}\n{timestamp(author.created_at, 'R')}",
+                "inline": True
+            },
+            "About Me": {
+                "text": f"Hey there! First off I'd like to thank you for using my bot, {self.bot.user.name}. "
+                        f"'m an aspiring Software Engineer who specializes in primarily Python.",
+                "inline": False
+            },
+            "Connected Accounts": {
+                "text": f"[Github](https://github.com/{author.name}/ 'View {author.name} on Github')\n[Spotify](https://open.spotify.com/user/w8hah1vw86ysdslahmv5fsm9b/ 'View {author.name} on Spotify')\n[Steam](https://steamcommunity.com/id/{author.name} 'View {author.name} on Steam')",
+                "inline": False
+            }
         }
 
         embed = discord.Embed(color=self.bot.EMBED_COLOR)
@@ -56,16 +67,16 @@ class Bot_Info(commands.Cog, name="Information"):
         embed.set_thumbnail(url=author.avatar_url)
         await ctx.send(embed=embed)
     
-    @commands.command (
+    @commands.command(
         brief="The generic version of `author_info`.",
         description="The generic version of `author_info`, does not include connected accounts.",
         aliases=["userinfo", "ui"]
     )
     @commands.guild_only()
-    async def user_info(self, ctx, user: discord.Member=None):
+    async def user_info(self, ctx, user: discord.Member = None):
         start_time = datetime.utcnow()
         async with ctx.channel.typing():
-            user = user or ctx.author # Get the user's profile if no member is passed
+            user = user or ctx.author  # Get the user's profile if no member is passed
             status_dict = {
                 discord.Status.online: self.bot.cust_emojis["status_online"],
                 discord.Status.idle: self.bot.cust_emojis["status_idle"],
@@ -79,10 +90,10 @@ class Bot_Info(commands.Cog, name="Information"):
                     f"{self.bot.cust_emojis['profile']} Profile Picture: [URL]({user.avatar_url} \"{user.name}'s Profile Picture\")",
                     f"{self.bot.cust_emojis['authorized']} ID: {user.id}",
                     f"{self.bot.cust_emojis['bot_tag']} Bot Account: {self.bot.cust_emojis['green_tick'] if user.bot else self.bot.cust_emojis['red_tick']}",
-                    f"{self.bot.cust_emojis['settings']} Created At: {self.timestamp(user.created_at)} - {self.timestamp(user.created_at, 'R')}",
+                    f"{self.bot.cust_emojis['settings']} Created At: {timestamp(user.created_at)} - {timestamp(user.created_at, 'R')}",
                 ],
                 "Server Info": [
-                    f"{self.bot.cust_emojis['member_join']} Joined At: {self.timestamp(user.joined_at)} - {self.timestamp(user.joined_at, 'R')}",
+                    f"{self.bot.cust_emojis['member_join']} Joined At: {timestamp(user.joined_at)} - {timestamp(user.joined_at, 'R')}",
                     f"{self.bot.cust_emojis['owner']} Server Owner: {self.bot.cust_emojis['green_tick'] if user == ctx.guild.owner else self.bot.cust_emojis['red_tick']}",
                     f"{self.bot.cust_emojis['booster']} Server Booster: {self.bot.cust_emojis['green_tick'] if user in ctx.guild.premium_subscribers else self.bot.cust_emojis['red_tick']}",
                     f"{self.bot.cust_emojis['mention']} Top Role: {user.top_role.mention}"
@@ -97,38 +108,44 @@ class Bot_Info(commands.Cog, name="Information"):
             user_embed.set_thumbnail(url=user.avatar_url)
             for section_title, section_info in user_info.items():
                 user_embed.add_field(name=section_title, value="\n".join(section_info), inline=False)
-            user_embed.set_footer(text=f"Finished in: {round((datetime.utcnow() - start_time).total_seconds(), 2)} seconds.")
+            time_spent = round((datetime.utcnow() - start_time).total_seconds(), 2)
+            user_embed.set_footer(text=f"Finished in: {time_spent} seconds.")
             await ctx.send(embed=user_embed)
     
     @user_info.error
     async def user_info_error(self, ctx, error):
         embed = discord.Embed(color=self.bot.EMBED_COLOR)
         if isinstance(error, commands.errors.MemberNotFound):
-            embed.description = f"{self.bot.cust_emojis['red_tick']} No member found with an id of `{ctx.message.content.split(' ')[1]}`. \nThis is probably because the bot does not share a server with that user."
+            embed.description = f"{self.bot.cust_emojis['red_tick']} No member found with an id of " \
+                                f"`{ctx.message.content.split(' ')[1]}`. " \
+                                f"\nThis is probably because the bot does not share a server with that user."
             await ctx.send(embed=embed)
         
         else:
             # Pass to generic error handler
             pass
-    
 
-    @commands.command (
+    @commands.command(
         brief="Returns the bot's prefixes.",
         description="Returns all available prefixes of the bot for the current guild.",
         aliases=["prefixes"]
     )
     async def prefix(self, ctx):
-        # if '<' not in prefix and '>' not in prefix else prefix for prefix in await self.bot.get_prefix(ctx.message)
-        # will place backticks at the begining and ending of entries from get_prefix() that do not contain both angle brackets.
-        # That way, only "normal" prefixes will be placed into single line code formatting, while mentions remain readable.
-        embed = discord.Embed (
+        list_of_prefixes = [prefix for prefix in await self.bot.get_prefix(ctx.message)]
+        for index, prefix in enumerate(list_of_prefixes):
+            if "<" not in prefix and ">" not in prefix:
+                prefix = f"`{prefix}`"
+                list_of_prefixes[index] = prefix
+            list_of_prefixes[index] = f"• {prefix}"
+
+        embed = discord.Embed(
             title="__Prefix List:__",
-            description="\n".join([f'• `{prefix}`' if '<' not in prefix and '>' not in prefix else f'• {prefix}' for prefix in await self.bot.get_prefix(ctx.message)]),
+            description="\n".join(prefix for prefix in list_of_prefixes),
             color=self.bot.EMBED_COLOR
         )
         await ctx.send(embed=embed)
     
-    @commands.command (
+    @commands.command(
         brief="Sends all custom emotes used by the bot.",
         description="Sends a list of all emotes by the bot.",
         aliases=["emojis"]
@@ -139,7 +156,9 @@ class Bot_Info(commands.Cog, name="Information"):
             [await ctx.send(f"{emoji} -- `{emoji}`\n") for emoji in self.bot.cust_emojis.values()]
             
         else:
-            embed = discord.Embed(description="**Here's a few random emojis from our server, feel free to join!**\n\n", color=self.bot.EMBED_COLOR)
+            embed = discord.Embed(
+                description="**Here's a few random emojis from our server, feel free to join!**\n\n",
+                color=self.bot.EMBED_COLOR)
             random_emojis = []
             temp_emojis_copy = list(self.bot.cust_emojis.values())
             for _ in range(8):
@@ -147,9 +166,10 @@ class Bot_Info(commands.Cog, name="Information"):
                 random_emojis.append(temp_emojis_copy[rand_num])
                 temp_emojis_copy.pop(rand_num)
 
-            embed.description += "\n".join([f"{emoji} -- `{emoji}`" for emoji in random_emojis]) # only show the first couple of emojis
-            embed.description += "\n... and many more!"
-            embed.description += "\n\nWant to use these emotes? Join the Emoji Hub server: https://discord.gg/GhQmawyqgp"
+            embed.description += "\n".join([f"{emoji} -- `{emoji}`" for emoji in random_emojis])
+            embed.description += """\n... and many more!
+            
+Want to use these emotes? Join the Emoji Hub server: https://discord.gg/GhQmawyqgp"""
             
             await ctx.send(embed=embed)
 

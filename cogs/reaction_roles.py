@@ -9,24 +9,22 @@ from json import load, dump
 from os import chdir
 
 
-class Reaction_Roles(commands.Cog, name="Reaction Roles"):
+class ReactionRoles(commands.Cog, name="Reaction Roles"):
     """Reaction Role Menus"""
     def __init__(self, bot):
         self.bot = bot
-    
+        self.role_menus = {}
 
     async def load_role_menus(self):
         # Load all role menus from the role_menus.json file and save them as an attribute
-        self.role_menus = {}
-
         chdir(f"{self.bot.BASE_DIR}/resources")
         with open("role_menus.json", "r") as f:
             menu_data = load(f)
 
         num_failed_loads = 0
-        for id, data in menu_data.items():
+        for full_id, data in menu_data.items():
             # Save the key as a discord message object
-            channel_id, message_id = id.split("-")
+            channel_id, message_id = full_id.split("-")
             try:
                 channel = self.bot.get_channel(int(channel_id))
                 message = await channel.fetch_message(int(message_id))
@@ -34,8 +32,8 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
                 # Message was deleted, bot can't view the channel, etc.
                 num_failed_loads += 1
                 chdir(self.bot.BASE_DIR)
-                self.bot.utils.log(f"Failed to load reaction role with id of: `{id}`")
-                continue # continue to next reaction role menu
+                self.bot.utils.log(f"Failed to load reaction role with id of: `{full_id}`")
+                continue  # continue to next reaction role menu
 
             role_emoji_dict = {}
             # Convert role ids to discord role objects
@@ -48,12 +46,11 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
         print(f"Loading Reaction Roles\n{'=' * 22}\nLoaded: {len(self.role_menus)}\nFailed to load {num_failed_loads}")
         chdir(self.bot.BASE_DIR)
 
-    
     @commands.Cog.listener()
     async def on_ready(self):
         await self.load_role_menus()
 
-    @commands.group (
+    @commands.group(
         brief="Create or delete a role menu, do `help rr` for more info.",
         description="Features several commands to create, remove, and edit (WIP) reaction role menus.", 
         aliases=["rr", "rrm"],
@@ -64,17 +61,18 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
         await ctx.send_help(self.reaction_role_menu)
 
     # Create a role menu
-    @reaction_role_menu.command (
+    @reaction_role_menu.command(
         name="add",
         brief="Creates a role menu.",
-        description="Creates an embed where users can add reactions to recieve roles.",
+        description="Creates an embed where users can add reactions to receive roles.",
         aliases=["create"]
     )
     async def create_role_menu(self, ctx, menu_name, roles: Greedy[discord.Role], *, emojis):
         emojis = emojis.split(" ")
 
         if len(roles) != len(emojis):
-            await ctx.send(f"The number of roles is not the same as the number of emojis, please try again. \n`Role  Count: {len(roles)}`\n`Emoji Count: {len(emojis)}`")
+            await ctx.send(f"The number of roles is not the same as the number of emojis, please try again."
+                           f"\n`Role  Count: {len(roles)}`\n`Emoji Count: {len(emojis)}`")
             return
     
         role_emoji_dict = {}
@@ -84,8 +82,8 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
             embed_desc += f"**{emoji} | {role.mention}**"
             role_emoji_dict[emoji] = role.id
 
-        role_menu = discord.Embed (
-            title=menu_name.replace("_"," "),
+        role_menu = discord.Embed(
+            title=menu_name.replace("_", " "),
             description=embed_desc,
             color=self.bot.EMBED_COLOR
         )
@@ -106,18 +104,18 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
         await self.load_role_menus()
     
     # Delete a role menu
-    @reaction_role_menu.command (
+    @reaction_role_menu.command(
         name="remove",
         brief="Deletes a role menu.",
         description="Deletes a role menu message and removes its data.",
         aliases=["rmv"]
     )
-    async def role_menu_remove(self, ctx, *, id):
-        if "-" in id:
+    async def role_menu_remove(self, ctx, *, full_id):
+        if "-" in full_id:
             channel_id, message_id = id.split("-")
         else:
-            channel_id = id[0]
-            message_id = id[1]
+            channel_id = full_id[0]
+            message_id = full_id[1]
 
         chdir(f"{self.bot.BASE_DIR}/resources")
         with open("role_menus.json", "r") as f:
@@ -130,7 +128,8 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
         except KeyError:
             # Wrong channel/message id(s)
             saved_ids = "\n".join(list(menus.keys()))
-            await ctx.send(f"There is not a registered role menu under `{channel_id}-{message_id}`. The following is a list of all currently saved menus. \n```{saved_ids}\n```")
+            await ctx.send(f"There is not a registered role menu under `{channel_id}-{message_id}`."
+                           f"\nThe following is a list of all currently saved menus. \n```{saved_ids}\n```")
 
         else:
             # Role menu with the id exists
@@ -140,7 +139,6 @@ class Reaction_Roles(commands.Cog, name="Reaction Roles"):
             channel = self.bot.get_channel(int(channel_id))
             message = await channel.fetch_message(int(message_id))
 
-            
             with open("role_menus.json", "w") as f:
                 dump(menus, f, indent=2)
             chdir(f"{self.bot.BASE_DIR}/resources")

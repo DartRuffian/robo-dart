@@ -7,8 +7,8 @@ from discord.ext import commands
 from webserver import keep_alive
 
 # Other Imports
-from datetime import datetime           # Get bot launch time
-from os import listdir, getcwd, environ # Load cogs/environment vars (token)
+from datetime import datetime            # Get bot launch time
+from os import listdir, getcwd, environ  # Load cogs/environment vars (token)
 from utils import Utils
 
 # Define the bot
@@ -16,7 +16,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
 intents.emojis = True
-bot = commands.Bot (
+bot = commands.Bot(
     command_prefix=commands.when_mentioned_or("!"),
     owner_id=400337254989430784,
     case_insensitive=True,
@@ -28,6 +28,7 @@ bot.BASE_DIR = getcwd()
 bot.EMBED_COLOR = 0x0E151D
 bot.launch_time = datetime.utcnow()
 bot.utils = Utils(bot)
+
 
 # Events
 @bot.event
@@ -44,7 +45,7 @@ for filename in listdir("./cogs"):
 
 
 # Launch the Bot
-keep_alive() # Keep bot running
+keep_alive()  # Keep bot running
 
 # Load token
 try:
