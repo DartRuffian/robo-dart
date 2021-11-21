@@ -39,4 +39,4 @@ class AutoWelcomer(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Auto_Welcomer(bot))
+    bot.add_cog(AutoWelcomer(bot))

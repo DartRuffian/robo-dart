@@ -43,7 +43,7 @@ class ReactionRoles(commands.Cog, name="Reaction Roles"):
                 role_emoji_dict[emoji] = role
 
             self.role_menus[message] = role_emoji_dict
-        print(f"Loading Reaction Roles\n{'=' * 22}\nLoaded: {len(self.role_menus)}\nFailed to load {num_failed_loads}")
+        print(f"\nLoading Reaction Roles\n{'=' * 22}\nLoaded: {len(self.role_menus)}\nFailed to load {num_failed_loads}")
         chdir(self.bot.BASE_DIR)
 
     @commands.Cog.listener()
@@ -180,4 +180,4 @@ class ReactionRoles(commands.Cog, name="Reaction Roles"):
 
 
 def setup(bot):
-    bot.add_cog(Reaction_Roles(bot))
+    bot.add_cog(ReactionRoles(bot))

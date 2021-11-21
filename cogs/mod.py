@@ -28,7 +28,7 @@ def get_content_tag(tags) -> str:
             return tag[len("content "):].lower()  # get only the text
 
 
-class ModOnly(commands.Cog, name="Moderation Commands"):
+class ModOnly(commands.Cog, name="Moderation"):
     """Moderation related commands"""
 
     def __init__(self, bot):
@@ -160,4 +160,4 @@ class ModOnly(commands.Cog, name="Moderation Commands"):
 
 
 def setup(bot):
-    bot.add_cog(Mod_Only(bot))
+    bot.add_cog(ModOnly(bot))

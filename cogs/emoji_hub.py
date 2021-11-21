@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 
-class Hub_Only(commands.Cog):
+class HubOnly(commands.Cog):
     """Emoji Hub Only Commands/Listeners"""
     def __init__(self, bot):
         self.bot = bot
@@ -29,6 +29,7 @@ class Hub_Only(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_emojis_update(self, guild, before, after):
         if guild.id != 903452394204065833 or len(before) > len(after):
+            # Only update if it is the Emoji Hub server
             return
         self.reload_emojis()
         channel = guild.get_channel(903453089128919151)
@@ -37,4 +38,4 @@ class Hub_Only(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Hub_Only(bot))
+    bot.add_cog(HubOnly(bot))

@@ -14,7 +14,7 @@ def timestamp(time, mode="F"):
 
 
 class BotInfo(commands.Cog, name="Information"):
-    """ Bot and Author Info """
+    """Bot and Author Info"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -175,4 +175,4 @@ Want to use these emotes? Join the Emoji Hub server: https://discord.gg/GhQmawyq
 
 
 def setup(bot):
-    bot.add_cog(Bot_Info(bot))
+    bot.add_cog(BotInfo(bot))
