@@ -26,6 +26,7 @@ class AutoWelcomer(commands.Cog):
             welcome_embed = create_embed(f"Everyone please welcome {member.mention} to {member.guild.name}!",
                                          member.avatar_url,
                                          0x1dfd00)
+            welcome_embed.set_footer(text=f"Member Count: {member.guild.member_count}")
             await welcome_channel.send(embed=welcome_embed)
     
     @commands.Cog.listener()
@@ -35,6 +36,7 @@ class AutoWelcomer(commands.Cog):
             welcome_embed = create_embed(f"Sorry to see you go {member.mention}, hope to see you again!",
                                          member.avatar_url,
                                          0xFF0000)
+            welcome_embed.set_footer(text=f"Member Count: {member.guild.member_count}")
             await welcome_channel.send(embed=welcome_embed)
 
 

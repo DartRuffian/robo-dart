@@ -106,7 +106,10 @@ class ModOnly(commands.Cog, name="Moderation"):
         aliases=["delete", "del", "clear", "cleanup"]
     )
     @has_permissions(manage_messages=True)
-    async def purge(self, ctx, limit: Greedy[int], clear_until: Greedy[discord.Message], *, tags="--ip"):
+    async def purge(self, ctx, limit: Greedy[int], clear_until: Greedy[discord.Message], *, tags=None):
+        if tags is None:
+            tags = "--ip"
+
         if limit == [] and clear_until == []:
             # Neither is passed, use as a pseudo help command
             args_desc = {
