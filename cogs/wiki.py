@@ -48,14 +48,12 @@ Double check your spelling and try again, capitalization and spaces do not matte
 
         soup = BeautifulSoup(response.content, "html.parser")
         all_paragraphs = soup.find_all("p")
-        summary = [p.get_text() for p in all_paragraphs if p.get_text() != "\n"].pop()
-        image = soup.find_all("img")[0].get("src")
+        summary = [p.get_text() for p in all_paragraphs if p.get_text() != "\n"][0]
 
         embed = discord.Embed(
             description=summary,
             color=self.bot.EMBED_COLOR
         )
-        embed.set_image(url="https:" + image)
         embed.set_author(name=f"{soup.find(id='firstHeading').string} (Click for Full Page)", url=url)
         await ctx.send(embed=embed)
 
