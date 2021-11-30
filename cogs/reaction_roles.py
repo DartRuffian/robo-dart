@@ -79,7 +79,7 @@ class ReactionRoles(commands.Cog, name="Reaction Roles"):
         embed_desc = ""
 
         for role, emoji in zip(roles, emojis):
-            embed_desc += f"**{emoji} | {role.mention}**"
+            embed_desc += f"**{emoji} | {role.mention}**\n"
             role_emoji_dict[emoji] = role.id
 
         role_menu = discord.Embed(
