@@ -24,22 +24,29 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return filename
 
 
-async def connect(ctx) -> None:
+async def connect(ctx) -> bool:
+    """Returns whether the bot connected to a voice channel"""
+    # TODO: Rewrite this to use a before_invoke wrapper
     if not ctx.message.author.voice:
         # User is not connected to a voice channel
         await ctx.send("Whoops! I got lost on the way to your voice channel, could you try joining one first?")
-        return
+        return False
 
     channel = ctx.message.author.voice.channel
     await channel.connect()
+    return True
 
 
-async def disconnect(ctx) -> None:
+async def disconnect(ctx) -> bool:
+    """Returns whether the bot disconnected from a voice channel"""
+    # TODO: Rewrite this to use a before_invoke wrapper
     voice_client = ctx.message.guild.voice_client
     if voice_client.is_connected():
         await voice_client.disconnect()
+        return True
     else:
         await ctx.send("I'm not currently in a voice channel, did you mean to have me join one?")
+        return False
 
 
 def setup_ytdl():
@@ -78,19 +85,26 @@ class MusicPlayer(commands.Cog, name="Panic at the Voice Channel"):
             url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
             # If no url is given, use Rick Astley's "Never Going to Give You Up" as the default
 
-        await connect(ctx)
+        if not await connect(ctx):
+            return
+
+        temp_message = await ctx.send("Downloading song, this may take a second...")
         async with ctx.channel.typing():
             filename = await YTDLSource.from_url(self.ytdl, url, loop=self.bot.loop)
+            await temp_message.delete()
             ctx.message.guild.voice_client.play(discord.FFmpegPCMAudio(executable="ffmpeg.exe", source=filename))
-            await ctx.send(f"**Now Playing:** __{filename.replace('_', ' ')}__")
+            display_name = filename.replace("_", " ")[:-17]  # Remove the youtube id and file extension
+            display_name = "".join(display_name)
+            await ctx.send(f"**Now Playing:** {display_name}")
 
     @commands.command(
-        brief="",
-        description="",
+        brief="Makes the bot leave the voice channel.",
+        description="Disconnects the bot from the current voice channel.",
         aliases=["l", "dc", "disconnect"],
     )
     async def leave(self, ctx):
-        await disconnect(ctx)
+        if await disconnect(ctx):
+            await ctx.send("Dipping out!")
 
 
 def setup(bot):
