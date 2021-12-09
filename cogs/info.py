@@ -51,7 +51,7 @@ class BotInfo(commands.Cog, name="Information"):
             },
             "About Me": {
                 "text": f"Hey there! First off I'd like to thank you for using my bot, {self.bot.user.name}. "
-                        f"'m an aspiring Software Engineer who specializes in primarily Python.",
+                        f"I'm an aspiring Software Engineer who specializes in primarily Python.",
                 "inline": False
             },
             "Connected Accounts": {

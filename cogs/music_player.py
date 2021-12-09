@@ -4,6 +4,7 @@ from discord.ext import commands
 
 # Streaming Imports
 import youtube_dl
+import asyncio
 
 
 class YTDLSource(discord.PCMVolumeTransformer):
@@ -105,6 +106,14 @@ class MusicPlayer(commands.Cog, name="Panic at the Voice Channel"):
     async def leave(self, ctx):
         if await disconnect(ctx):
             await ctx.send("Dipping out!")
+
+    @commands.command(
+        brief="Clears the Youtube_DL Cache",
+        aliases=["cache"]
+    )
+    async def clear_cache(self, ctx):
+        self.ytdl.cache.remove()
+        await ctx.send("Cache Cleared!")
 
 
 def setup(bot):
