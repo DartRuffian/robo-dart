@@ -154,10 +154,7 @@ class ModOnly(commands.Cog, name="Moderation"):
                         break
 
         deleted = sum(deleted_messages.values())
-        messages = [
-            f"""{f'*Only messages containing `{text_to_clear}` were deleted*"' if text_to_clear is not None else ""}
-        {deleted} message{' was' if deleted == 1 else 's were'} removed."""
-        ]
+        messages = [f"{deleted} message{' was' if deleted == 1 else 's were'} removed."]
         messages.extend(f"- **{author}**: {count}" for author, count in deleted_messages.items())
         await ctx.send("\n".join(messages), delete_after=10)
 
