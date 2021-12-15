@@ -6,7 +6,6 @@ from discord.ext import commands
 
 # Other Imports
 import json
-import os
 
 
 class AnonChannelHandler:
