@@ -183,14 +183,18 @@ You can add channels using `{ctx.prefix}channel add #channel`, where `#channel` 
 
     @channel.command()
     @commands.has_permissions(manage_channels=True)
-    async def add(self, ctx, channel: discord.TextChannel):
+    async def add(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
         self.handler.add_channel(channel)
         await ctx.send(f"{channel.mention} has been added as an anonymous channel! "
                        f"You can view the full list with `{ctx.prefix}channels`")
 
     @channel.command()
     @commands.has_permissions(manage_channels=True)
-    async def remove(self, ctx, channel: discord.TextChannel):
+    async def remove(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
         self.handler.remove_channel(channel)
         await ctx.send(f"{channel.mention} has been removed from the list of anonymous channels! "
                        f"You can view the full list with `{ctx.prefix}channels`")
