@@ -4,9 +4,14 @@ from discord.ext import commands
 from discord.ext.commands import Greedy
 
 # Other Imports
+from utils import StatusType
 from emoji import emojize
 from json import load, dump
 from os import chdir
+
+
+class ChannelNotFound(Exception):
+    ...
 
 
 class ReactionRoles(commands.Cog, name="Reaction Roles"):
@@ -27,12 +32,16 @@ class ReactionRoles(commands.Cog, name="Reaction Roles"):
             channel_id, message_id = full_id.split("-")
             try:
                 channel = self.bot.get_channel(int(channel_id))
+                if channel is None:
+                    raise ChannelNotFound
                 message = await channel.fetch_message(int(message_id))
-            except discord.errors.NotFound:
+            except discord.errors.NotFound or ChannelNotFound:
                 # Message was deleted, bot can't view the channel, etc.
                 num_failed_loads += 1
                 chdir(self.bot.BASE_DIR)
-                self.bot.utils.log(f"Failed to load reaction role with id of: `{full_id}`")
+                self.bot.logger.write(status=StatusType.WARNING,
+                                      message=f"Failed to load reaction role menu with id: {full_id!r}"
+                                      )
                 continue  # continue to next reaction role menu
 
             role_emoji_dict = {}

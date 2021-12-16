@@ -9,7 +9,7 @@ from webserver import keep_alive
 # Other Imports
 from datetime import datetime            # Get bot launch time
 from os import listdir, getcwd, environ  # Load cogs/environment vars (token)
-from utils import Utils                  # Utility functions
+from utils import Logger                 # Utility functions
 
 
 def get_token() -> str:
@@ -44,7 +44,7 @@ def main() -> None:
     bot.BASE_DIR = getcwd()
     bot.EMBED_COLOR = 0x0E151D
     bot.LAUNCH_TIME = datetime.utcnow()
-    bot.utils = Utils(bot)
+    bot.logger = Logger(bot, f"{bot.BASE_DIR}/resources/bot.log")
 
     # Load all cogs
     for filename in listdir("./cogs"):

@@ -2,15 +2,27 @@
 import discord
 
 # Other Imports
+from enum import Enum, auto
+from datetime import datetime
 import os
 
 
-class Utils:
-    def __init__(self, bot: discord.ext.commands.Bot):
-        self._bot = bot
+class StatusType(Enum):
+    ERROR = auto()
+    WARNING = auto()
+    OK = auto()
 
-    def log(self, message: str) -> None:
-        os.chdir(f"{self._bot.BASE_DIR}/resources")
-        with open("bot.log", "a") as f:
-            f.write(message + "\n\n")
-        os.chdir(self._bot.BASE_DIR)
+
+class Logger:
+    def __init__(self, bot: discord.ext.commands.Bot, log_file_path: str):
+        self._bot = bot
+        self.file_dir = log_file_path
+
+    def write(self, *, status: StatusType, message: str):
+        new_log_line = f"""[{datetime.now()}]
+[Status: {status}]
+{message}
+===================================================================================\n"""
+        print(new_log_line)
+        with open(self.file_dir, "a") as f:
+            f.write(new_log_line)
