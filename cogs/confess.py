@@ -160,6 +160,17 @@ Or if you'd like to cancel your message, type `cancel`.""")
         embed = create_embed(message)
         await chosen_channel.send(embed=embed)
 
+    @anon_confess.error()
+    async def anon_confess_error_handler(self, ctx, error):
+        await ctx.message.delete()
+        if isinstance(error, commands.errors.PrivateMessageOnly):
+            await ctx.author.send(f"The command {ctx.message.content.split(' ')[0]} can only be used in private "
+                                  f"messages. Please run the command again. The last version of your message was:")
+            await ctx.author.send(f"```\n{ctx.content}\n```")
+
+        if isinstance(error, commands.errors.MissingRequiredArgument):
+            await ctx.author.send("Make sure to include a message when running the command.")
+
     @commands.group(
         brief="...",
         description="...",
