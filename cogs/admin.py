@@ -79,6 +79,16 @@ class AdminOnly(commands.Cog):
         await ctx.message.delete()
         [await channel.send(message) for channel in channels or [ctx.channel]]
 
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        owner = self.bot.get_user(self.bot.owner_id)
+        await owner.send(f"{self.bot.user.name} was just added to {guild.name!r}! Guild ID: `{guild.id}`")
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        owner = self.bot.get_user(self.bot.owner_id)
+        await owner.send(f"{self.bot.user.name} was just removed from {guild.name!r}! Guild ID: `{guild.id}`")
+
 
 def setup(bot):
     bot.add_cog(AdminOnly(bot))
