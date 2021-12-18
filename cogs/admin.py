@@ -9,6 +9,9 @@ import traceback
 import textwrap
 import io
 
+# Other Imports
+from utils import StatusType
+
 
 def cleanup_code(content) -> str:
     """Removes code blocks from a given input"""
@@ -82,12 +85,16 @@ class AdminOnly(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         owner = self.bot.get_user(self.bot.owner_id)
-        await owner.send(f"{self.bot.user.name} was just added to {guild.name!r}! Guild ID: `{guild.id}`")
+        message = f"{self.bot.user.name} was just added to {guild.name!r}! Guild ID: `{guild.id}`"
+        await owner.send(message)
+        self.bot.logger.write(StatusType.OK, message)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         owner = self.bot.get_user(self.bot.owner_id)
-        await owner.send(f"{self.bot.user.name} was just removed from {guild.name!r}! Guild ID: `{guild.id}`")
+        message = f"{self.bot.user.name} was just removed from {guild.name!r}! Guild ID: `{guild.id}`"
+        await owner.send(message)
+        self.bot.logger.write(StatusType.OK, message)
 
 
 def setup(bot):
