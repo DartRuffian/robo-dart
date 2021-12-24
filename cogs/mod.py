@@ -28,6 +28,16 @@ def get_content_tag(tags) -> str:
             return tag[len("content "):].lower()  # get only the text
 
 
+def create_embed(ctx, message) -> discord.Embed:
+    embed = discord.Embed(
+            description=message,
+            color=self.bot.EMBED_COLOR,
+            timestamp=datetime.utcnow()
+        )
+    embed.set_footer(text=f"Action performed by {ctx.author}")
+    return embed
+
+
 class ModOnly(commands.Cog, name="Moderation"):
     """Moderation related commands"""
 
@@ -46,11 +56,10 @@ class ModOnly(commands.Cog, name="Moderation"):
             return
         [await member.kick(reason=reason) for member in members]
         kicked_members = "".join([f"- {member.mention}\n" for member in members])
-        embed = discord.Embed(
-            description=f"The following members have been banned from {ctx.guild.name}:"
-                        f"\n{kicked_members} for: \n> {reason or 'No reason given.'}",
-            color=self.bot.EMBED_COLOR,
-            timestamp=datetime.utcnow()
+        embed = create_embed(
+            ctx,
+            f"The following members have been kicked from {ctx.guild.name}:"
+            f"\n {kicked_members} for: \n> {reason or 'No reason given.'}"
         )
         embed.set_footer(text=f"Action performed by {ctx.author}")
         await ctx.send(embed=embed)
@@ -67,13 +76,11 @@ class ModOnly(commands.Cog, name="Moderation"):
             return
         [await member.ban(reason=reason) for member in members]
         banned_members = "".join([f"- {member.mention}\n" for member in members])
-        embed = discord.Embed(
-            description=f"The following members have been banned from {ctx.guild.name}:"
-                        f"\n{banned_members} for: \n> {reason or 'No reason given.'}",
-            color=self.bot.EMBED_COLOR,
-            timestamp=datetime.utcnow()
+        embed = create_embed(
+            ctx,
+            f"The following members have been banned from {ctx.guild.name}:"
+            f"\n {banned_members} for: \n> {reason or 'No reason given.'}"
         )
-        embed.set_footer(text=f"Action performed by {ctx.author}")
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -88,13 +95,11 @@ class ModOnly(commands.Cog, name="Moderation"):
             return
         [await member.unban(reason=reason) for member in members]
         unbanned_members = "".join([f"- {member.mention}\n" for member in members])
-        embed = discord.Embed(
-            description=f"The following members have been unbanned from {ctx.guild.name}:"
-                        f"\n {unbanned_members} for: \n> {reason or 'No reason given.'}",
-            color=self.bot.EMBED_COLOR,
-            timestamp=datetime.utcnow()
+        embed = create_embed(
+            ctx,
+            f"The following members have been unbanned from {ctx.guild.name}:"
+            f"\n {unbanned_members} for: \n> {reason or 'No reason given.'}"
         )
-        embed.set_footer(text=f"Action performed by {ctx.author}")
         await ctx.send(embed=embed)
 
     @commands.command(
