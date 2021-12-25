@@ -11,6 +11,7 @@ def create_embed(message, thumbnail_url, color) -> discord.Embed:
         color=color
     )
     embed.set_thumbnail(url=thumbnail_url)
+    embed.set_footer(text=f"Member Count: {member.guild.member_count}")
     return embed
 
 
@@ -21,23 +22,35 @@ class AutoWelcomer(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        welcome_channel = get(member.guild.channels, name="welcome")
+        welcome_channel = get(member.guild.text_channels, name="welcome")
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Everyone please welcome {member.mention} to {member.guild.name}!",
                                          member.avatar_url,
                                          0x1dfd00)
-            welcome_embed.set_footer(text=f"Member Count: {member.guild.member_count}")
             await welcome_channel.send(embed=welcome_embed)
     
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        welcome_channel = get(member.guild.channels, name="welcome")
+        welcome_channel = get(member.guild.text_channels, name="welcome")
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Sorry to see you go {member.mention}, hope to see you again!",
                                          member.avatar_url,
                                          0xFF0000)
-            welcome_embed.set_footer(text=f"Member Count: {member.guild.member_count}")
             await welcome_channel.send(embed=welcome_embed)
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        channel = get(guild.text_channels, name="welcome") or guild.text_channels[0]
+        await channel.send(f"""Thanks for inviting me to **{guild.name}**!
+{self.bot.user.mention} is a general purpose bot, that has tons of useful features!
+Some of these features include:
+- Reaction Roles
+- Moderation Commands
+- Anonymous Messaging
+- User Info
+and many more!
+
+For a full list of all of the available commands, type `!help`""")
 
 
 def setup(bot):

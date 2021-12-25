@@ -87,14 +87,14 @@ class AdminOnly(commands.Cog):
         owner = self.bot.get_user(self.bot.owner_id)
         message = f"{self.bot.user.name} was just added to {guild.name!r}! Guild ID: `{guild.id}`"
         await owner.send(message)
-        self.bot.logger.write(StatusType.OK, message)
+        self.bot.logger.write(status=StatusType.OK, message=message)
 
     @commands.Cog.listener()
-    async def on_guild_join(self, guild):
+    async def on_guild_remove(self, guild):
         owner = self.bot.get_user(self.bot.owner_id)
         message = f"{self.bot.user.name} was just removed from {guild.name!r}! Guild ID: `{guild.id}`"
         await owner.send(message)
-        self.bot.logger.write(StatusType.OK, message)
+        self.bot.logger.write(status=StatusType.OK, message=message)
 
 
 def setup(bot):
