@@ -15,6 +15,12 @@ def create_embed(message, thumbnail_url, color) -> discord.Embed:
     return embed
 
 
+def get_welcome_channel(guild: discord.Guild) -> discord.TextChannel:
+    for channel in guild.text_channels:
+        if "welcome" in channel.name.lower():
+            return channel
+
+
 class AutoWelcomer(commands.Cog):
     """Auto Welcomer"""
     def __init__(self, bot):
@@ -22,7 +28,7 @@ class AutoWelcomer(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        welcome_channel = get(member.guild.text_channels, name="welcome")
+        welcome_channel = get_welcome_channel(member.guild)
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Everyone please welcome {member.mention} to {member.guild.name}!",
                                          member.avatar_url,
@@ -31,7 +37,7 @@ class AutoWelcomer(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        welcome_channel = get(member.guild.text_channels, name="welcome")
+        welcome_channel = get_welcome_channel(member.guild)
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Sorry to see you go {member.mention}, hope to see you again!",
                                          member.avatar_url,
@@ -40,7 +46,7 @@ class AutoWelcomer(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        channel = get(guild.text_channels, name="welcome") or guild.text_channels[0]
+        channel = get_welcome_channel(member.guild) or guild.text_channels[0]
         await channel.send(f"""Thanks for inviting me to **{guild.name}**!
 {self.bot.user.mention} is a general purpose bot, that has tons of useful features!
 Some of these features include:
