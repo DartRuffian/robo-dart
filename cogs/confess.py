@@ -12,15 +12,15 @@ class AnonChannelHandler:
     def __init__(self, bot: commands.Bot, file_dir: str):
         self.bot = bot
         self.file_dir = file_dir
-        self._channels: dict[str: list[discord.TextChannel]] = self.load(file_dir)
+        self._channels = self.load(file_dir)
 
     @property
-    def vent_channels(self) -> dict[str: list[discord.TextChannel]]:
+    def vent_channels(self) -> dict:
         return self._channels
 
-    def to_json(self) -> dict[str: list[int]]:
+    def to_json(self) -> dict:
         """Returns the self.vent_channels attribute as a json-valid object"""
-        json_object: dict[str: list[int]] = {}
+        json_object: dict = {}
         for guild_id, channels in self._channels.items():
             json_object[str(guild_id)] = [channel.id for channel in channels]
         return json_object
@@ -31,7 +31,7 @@ class AnonChannelHandler:
         with open(self.file_dir, "w") as f:
             json.dump(json_object, f, indent=2)
 
-    def load(self, file_dir: str = None) -> dict[str: list[discord.TextChannel]]:
+    def load(self, file_dir: str = None) -> dict:
         """Loads the given file at the given file path and returns it as a dict of a guild id to a list of channels"""
         if file_dir is None:
             file_dir = self.file_dir

@@ -4,13 +4,13 @@ from discord.ext import commands
 from discord.utils import get
 
 
-def create_embed(message, thumbnail_url, color) -> discord.Embed:
+def create_embed(message, member, color) -> discord.Embed:
     """Creates an embed with a given message, color, and thumbnail"""
     embed = discord.Embed(
         description=message,
         color=color
     )
-    embed.set_thumbnail(url=thumbnail_url)
+    embed.set_thumbnail(url=member.avatar_url)
     embed.set_footer(text=f"Member Count: {member.guild.member_count}")
     return embed
 
@@ -31,7 +31,7 @@ class AutoWelcomer(commands.Cog):
         welcome_channel = get_welcome_channel(member.guild)
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Everyone please welcome {member.mention} to {member.guild.name}!",
-                                         member.avatar_url,
+                                         member,
                                          0x1dfd00)
             await welcome_channel.send(embed=welcome_embed)
     
@@ -40,7 +40,7 @@ class AutoWelcomer(commands.Cog):
         welcome_channel = get_welcome_channel(member.guild)
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Sorry to see you go {member.mention}, hope to see you again!",
-                                         member.avatar_url,
+                                         member,
                                          0xFF0000)
             await welcome_channel.send(embed=welcome_embed)
 
