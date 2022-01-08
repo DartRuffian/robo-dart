@@ -46,7 +46,7 @@ class AutoWelcomer(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        channel = get_welcome_channel(member.guild) or guild.text_channels[0]
+        channel = get_welcome_channel(guild) or guild.text_channels[0]
         await channel.send(f"""Thanks for inviting me to **{guild.name}**!
 {self.bot.user.mention} is a general purpose bot, that has tons of useful features!
 Some of these features include:
