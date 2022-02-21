@@ -42,9 +42,11 @@ class AutoWelcomer(commands.Cog):
             welcome_embed = create_embed(f"Sorry to see you go {member.mention}, hope to see you again!",
                                          member,
                                          0xFF0000)
+            roles = [role.mention for role in member.roles]
+            roles.reverse()
             welcome_embed.add_field(
                 name="Roles",
-                value=", ".join([role.mention for role in member.roles])
+                value=", ".join(roles)
             )
             await welcome_channel.send(embed=welcome_embed)
 
