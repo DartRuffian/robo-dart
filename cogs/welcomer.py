@@ -28,7 +28,14 @@ class AutoWelcomer(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        welcome_channel = get_welcome_channel(member.guild)
+        if member.guild.id == 973697002242199562:
+            welcome_channel = member.guild.get_channel(973699831556100146)
+            for role in [973833839719895040, 973995842035933284, 973834101943590932, 973831426862612490]:
+                member.add_role(guild.get_role(role))
+
+        else:
+            welcome_channel = get_welcome_channel(member.guild)
+
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Everyone please welcome {member.mention} to {member.guild.name}!",
                                          member,
@@ -37,7 +44,11 @@ class AutoWelcomer(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        welcome_channel = get_welcome_channel(member.guild)
+        if member.guild.id == 973697002242199562:
+            welcome_channel = member.guild.get_channel(973699831556100146)
+        else:
+            welcome_channel = get_welcome_channel(member.guild)
+
         if welcome_channel is not None:
             welcome_embed = create_embed(f"Sorry to see you go {member.mention}, hope to see you again!",
                                          member,
